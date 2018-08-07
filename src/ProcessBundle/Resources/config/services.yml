@@ -1,0 +1,4 @@
+services:
+#    process.example:
+#        class: ProcessBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]
