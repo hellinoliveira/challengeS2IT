@@ -1,8 +1,4 @@
-process:
-    type: rest
-    resource: "@ProcessBundle/Controller/ProcessController.php"
-    prefix:   /api
-
 app:
+    type: rest
     resource: '@AppBundle/Controller/'
-    type: annotation
+    prefix:   /api
