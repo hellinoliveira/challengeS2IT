@@ -20,13 +20,13 @@ class Shiporder
     private $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="Item", mappedBy="Shiporder")
+     * @ORM\OneToMany(targetEntity="Item", mappedBy="shiporder")
      */
     private $items;
 
     /**
      * @var \AppBundle\Entity\Shipto
-     * @ORM\ManyToOne(targetEntity="Shipto", inversedBy="Shiporder")
+     * @ORM\ManyToOne(targetEntity="Shipto", inversedBy="shiporder")
      * @ORM\JoinColumn(name="shipto_id", referencedColumnName="id")
      */
     private $shipto;
@@ -39,7 +39,7 @@ class Shiporder
 
     /**
      * @var \AppBundle\Entity\Person
-     * @ORM\ManyToOne(targetEntity="Person", inversedBy="Shiporder")
+     * @ORM\ManyToOne(targetEntity="Person", inversedBy="shiporder")
      * @ORM\JoinColumn(name="person_id", referencedColumnName="id")
      */
     private $orderPerson;

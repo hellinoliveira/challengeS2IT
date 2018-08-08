@@ -29,7 +29,7 @@ class Person
     /**
      * @ORM\OneToMany(
      *      targetEntity="Phone",
-     *      mappedBy="people",
+     *      mappedBy="person",
      *      orphanRemoval=true
      * )
      */
@@ -53,16 +53,6 @@ class Person
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @param int $id
-     * @return Person
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-        return $this;
     }
 
     /**

@@ -1,4 +1,12 @@
 app:
+    resource: "@AppBundle/Controller/"
+    type:     annotation
+
+challenge:
     type: rest
-    resource: '@AppBundle/Controller/'
+    resource: '@AppBundle/Controller/PersonController.php'
     prefix:   /api
+
+NelmioApiDocBundle:
+    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
+    prefix:   /api/doc
