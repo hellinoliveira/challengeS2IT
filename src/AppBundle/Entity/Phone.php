@@ -23,7 +23,7 @@ class Phone
 
     /**
      * @var Person
-     * @ORM\ManyToOne(targetEntity="Person", inversedBy="phone")
+     * @ORM\ManyToOne(targetEntity="Person", inversedBy="phones")
      * @ORM\JoinColumn(name="person_id", referencedColumnName="id")
      */
     private $person;

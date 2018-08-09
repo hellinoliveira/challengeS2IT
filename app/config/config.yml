@@ -7,6 +7,7 @@ imports:
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en
+    upload_directory: '%kernel.root_dir%/../web/uploads'
 
 framework:
     #esi: ~
@@ -82,7 +83,7 @@ nelmio_api_doc: ~
 fos_rest:
     param_fetcher_listener: true
     body_listener: true
-    format_listener: true
+    format_listener: false
     view:
         view_response_listener: 'force'
         formats:

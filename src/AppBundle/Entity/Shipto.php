@@ -17,7 +17,7 @@ class Shipto
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Shiporder", inversedBy="shipto", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="Shiporder", inversedBy="shipto", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
      */
     private $shiporder;

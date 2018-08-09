@@ -26,7 +26,7 @@ class Shiporder
 
     /**
      * @var \AppBundle\Entity\Shipto
-     * @ORM\ManyToOne(targetEntity="Shipto", inversedBy="shiporder")
+     * @ORM\OneToOne(targetEntity="Shipto", mappedBy="shiporder")
      * @ORM\JoinColumn(name="shipto_id", referencedColumnName="id")
      */
     private $shipto;
@@ -37,12 +37,6 @@ class Shiporder
      */
     private $orderid;
 
-    /**
-     * @var \AppBundle\Entity\Person
-     * @ORM\ManyToOne(targetEntity="Person", inversedBy="shiporder")
-     * @ORM\JoinColumn(name="person_id", referencedColumnName="id")
-     */
-    private $orderPerson;
 
     public function __construct()
     {

@@ -21,6 +21,12 @@ class Person
     private $id;
 
     /**
+     * @ORM\Column(type="integer")
+     * @var int
+     */
+    private $personId;
+
+    /**
      * @ORM\Column(type="string", length=20)
      * @var string
      */
@@ -54,6 +60,25 @@ class Person
     {
         return $this->id;
     }
+
+    /**
+     * @return int
+     */
+    public function getPersonId()
+    {
+        return $this->personId;
+    }
+
+    /**
+     * @param int $personId
+     * @return Phone
+     */
+    public function setPersonId($personId)
+    {
+        $this->personId = $personId;
+        return $this;
+    }
+
 
     /**
      * @return string
