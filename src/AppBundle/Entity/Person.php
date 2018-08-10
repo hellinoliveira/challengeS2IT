@@ -36,6 +36,7 @@ class Person
      * @ORM\OneToMany(
      *      targetEntity="Phone",
      *      mappedBy="person",
+     *      cascade={"persist"},
      *      orphanRemoval=true
      * )
      */

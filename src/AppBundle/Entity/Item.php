@@ -55,11 +55,6 @@ class Item
      */
     private $createdAt;
 
-    /**
-     * @var \DateTime
-     * @ORM\Column(type="datetime")
-     */
-    private $updatedAt;
 
     /**
      * @return int
@@ -143,7 +138,7 @@ class Item
     }
 
     /**
-     * @return mixed
+     * @return float
      */
     public function getPrice()
     {
@@ -151,7 +146,7 @@ class Item
     }
 
     /**
-     * @param mixed $price
+     * @param float $price
      * @return Item
      */
     public function setPrice($price)
@@ -178,23 +173,9 @@ class Item
         return $this;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getUpdatedAt()
+    public function __construct()
     {
-        return $this->updatedAt;
+        $this->createdAt = new \DateTime();
     }
-
-    /**
-     * @param \DateTime $updatedAt
-     * @return Item
-     */
-    public function setUpdatedAt($updatedAt)
-    {
-        $this->updatedAt = $updatedAt;
-        return $this;
-    }
-
 
 }

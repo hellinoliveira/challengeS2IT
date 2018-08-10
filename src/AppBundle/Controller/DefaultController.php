@@ -2,6 +2,10 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Item;
+use AppBundle\Entity\Shiporder;
+use AppBundle\Entity\Shipto;
+use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -75,11 +79,11 @@ class DefaultController extends Controller
             $xml = simplexml_load_file($file);
             $xml = json_decode(json_encode($xml), 1);
             if (array_key_exists('person', $xml)) {
-                $this->persistPerson($xml['person']);
-//            } else {
-//                if (array_key_exists('shiporder', $xml)) {
-//                    $this->persistShiporder($xml['shiporder']);
-//                }
+                $this->savePersonInfo($xml['person']);
+            } else {
+                if (array_key_exists('shiporder', $xml)) {
+                    $this->saveOrderInfo($xml['shiporder']);
+                }
             }
         }
         return $this->render('default/upload.html.twig', array(
@@ -87,85 +91,97 @@ class DefaultController extends Controller
         ));
     }
 
-    private function persistPerson($xml)
+    private function savePersonInfo($xml)
     {
-        foreach ($xml as $personData) {
-            $date = new \DateTime(gmdate('Y-m-d H:i:s'));
-            $person = new Person();
-//            $person->setP $personData->personid);
-            $person->setPersonName($personData['personname']);
-            $person->setPersonId($personData['personid']);
-//            $person->setCreated($date);
-//            $person->setUpdated($date);
+        foreach ($xml as $data) {
             $entityManager = $this->getDoctrine()->getManager();
-            $personExists = $this->getDoctrine()
+            $person = $this->getDoctrine()
                 ->getRepository(Person::class)
-                ->find($personData['personid']);
-            if ($personExists) {
-//                $person->setCreated($personExists->getCreated());
-                //todo  adicionarcollect
-//                $em->persist($user);
-//                $user->setCollecImages($collecImages);
-//                $em->flush();
+                ->findOneBy(array('personId' => $data['personid']));
+            if (!empty($person)) {
                 $entityManager->merge($person);
             } else {
+                $person = new Person();
+                $person->setPersonId($data['personid']);
+                $person->setPersonName($data['personname']);
+                $person->setPersonId($data['personid']);
                 $entityManager->persist($person);
             }
-            if (isset($personData['phones']) && isset($item->phones->phone) && count($personData['phones']['phone']) > 0) {
-                foreach ($personData['phones']['phone'] AS $key => $phone) {
-                    $phone = (array)$phone;
-                    $phone = $phone[0];
-                    $person_phone = new Phone();
-                    $person_phone->setPerson($person);
-                    $person_phone->setPhone($phone);
+
+            foreach ($data['phones'] as $phoneNumbers) {
+
+                if (is_string($phoneNumbers)) {
+                    $phoneNumbers = array(0 => $phoneNumbers);
+                }
+                foreach ($phoneNumbers as $phoneNumber) {
+                    $phone = new Phone();
+                    $phone->setPerson($person);
+                    $phone->setPhone($phoneNumber);
 
                     $entityManager = $this->getDoctrine()->getManager();
                     $phoneExists = $this->getDoctrine()
-                        ->getRepository(Person::class)
-                        ->findOneBy(array('phone' => $phone));
-                    if ($phoneExists) {
-//                        $person_phone->setId(intval($phoneExists->getId()));
-//                        $person_phone->setCreated($phoneExists->getCreated());
-                        $entityManager->merge($person_phone);
-                    } else {
-                        $entityManager->persist($person_phone);
+                        ->getRepository(Phone::class)
+                        ->findOneBy(array('phone' => $phoneNumber, 'person' => $person));
+                    if (!$phoneExists) {
+                        $person->getPhones()->add($phone);
                     }
                 }
             }
+            $entityManager->merge($person);
             $entityManager->flush();
         }
     }
 
-    private function persistShiporder($xml)
+    private function saveOrderInfo($xml)
     {
-        foreach ($xml as $shiporderData) {
-            $shiporder = Shiporder::firstOrNew(array('orderId' => $shiporderData['orderid']));
-            $shiporder->orderId = $shiporderData['orderid'];
-            $shiporder->personId = $shiporderData['orderperson'];
-            $shiporder->save();
-            $shiptoData = $shiporderData['shipto'];
-            $shipto = Shipto::firstOrNew(array('orderId' => $shiporderData['orderid']));
-            $shipto->orderId = $shiporderData['orderid'];
-            $shipto->name = $shiptoData['name'];
-            $shipto->address = $shiptoData['address'];
-            $shipto->city = $shiptoData['city'];
-            $shipto->country = $shiptoData['country'];
-            $shipto->save();
-            Item::where('orderId', $shiporderData['orderid'])->delete();
-            $itemData = $shiporderData['items']['item'];
-            if (!array_key_exists(0, $itemData)) {
-                $itemData = array(0 => $itemData);
-            }
-            foreach ($itemData as $itemValue) {
-                $item = new Item();
-                $item->orderId = $shiporderData['orderid'];
-                $item->title = $itemValue['title'];
-                $item->note = $itemValue['note'];
-                $item->quantity = $itemValue['quantity'];
-                $item->price = $itemValue['price'];
-                $item->save();
-            }
-        }
-    }
+        foreach ($xml as $data) {
 
+            $entityManager = $this->getDoctrine()->getManager();
+            $shiporder = $this->getDoctrine()
+                ->getRepository(Shiporder::class)
+                ->findOneBy(array('orderid' => $data['orderid']));
+            if (!empty($shiporder)) {
+                $entityManager->merge($shiporder);
+            } else {
+                $shiporder = new Shiporder();
+                $shiporder->orderId = $data['orderid'];
+                $shiporder->personId = $data['orderperson'];
+                $entityManager->persist($shiporder);
+            }
+
+            $shiptoData = $data['shipto'];
+            $shipto = $this->getDoctrine()
+                ->getRepository(Shipto::class)
+                ->findOneBy(array('shiporder' => $shiporder));
+            if (!empty($shipto)) {
+                $entityManager->merge($shipto);
+            } else {
+                $shipto = new Shipto();
+                $shipto->setName($data['name']);
+                $shipto->setAddress($shiptoData['address']);
+                $shipto->setCity($shiptoData['city']);
+                $shipto->setCountry($shiptoData['country']);
+                $shiporder->setShipto($shipto);
+            }
+            $item = $shipto = $this->getDoctrine()
+                ->getRepository(Item::class)
+                ->findOneBy(array('shiporder' => $shiporder));
+            if (!empty($item)) {
+                $itemData = $data['items']['item'];
+                if (!array_key_exists(0, $itemData)) {//todo arrumar aqui
+                    $itemData = array(0 => $itemData);
+                }
+                foreach ($itemData as $itemValue) {
+                    $item = new Item();
+                    $item->setTitle($itemValue['title']);
+                    $item->setNote($itemValue['note']);
+                    $item->setQuantity($itemValue['quantity']);
+                    $item->setPrice($itemValue['price']);
+
+                    $shiporder->getItems()->add($item);
+                }
+            }
+        }//todo salvar e flush
+
+    }
 }
