@@ -28,4 +28,5 @@ Bonus points:
 1. edit parameters.yml to set your mysql user, password and database name
 1. run php app/console doctrine:database:create
 1. run php app/console doctrine:schema:create
-1. open your browser and go to ....
+1. run php app/console server:start
+1. open your browser and go to 127.0.0.1:8000
