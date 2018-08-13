@@ -106,5 +106,4 @@ class Phone
     {
         $this->createdAt = new \DateTime();
     }
-
 }

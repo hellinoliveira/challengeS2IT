@@ -177,6 +177,4 @@ class Shipto
         $this->createdAt = $createdAt;
         return $this;
     }
-
-
 }

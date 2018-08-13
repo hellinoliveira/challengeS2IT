@@ -19,7 +19,7 @@ class Item
     private $id;
 
     /**
-     * @var int
+     * @var Shiporder
      * @ORM\ManyToOne(targetEntity="Shiporder", inversedBy="items", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
      */
@@ -74,7 +74,7 @@ class Item
     }
 
     /**
-     * @param int $shiporder
+     * @param Shiporder $shiporder
      * @return Item
      */
     public function setShiporder($shiporder)
@@ -177,5 +177,4 @@ class Item
     {
         $this->createdAt = new \DateTime();
     }
-
 }

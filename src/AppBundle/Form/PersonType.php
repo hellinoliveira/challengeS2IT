@@ -31,6 +31,4 @@ class PersonType extends AbstractType
     {
         return 'appbundle_person';
     }
-
-
 }

@@ -134,5 +134,4 @@ class Person
         $this->createdAt = $createdAt;
         return $this;
     }
-
 }

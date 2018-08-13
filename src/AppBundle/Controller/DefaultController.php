@@ -15,27 +15,15 @@ use AppBundle\Entity\Person;
 
 class DefaultController extends Controller
 {
-//    /**
-//     * @Route("/", name="homepage")
-//     */
-//    public function indexAction(Request $request)
-//    {
-//        // replace this example code with whatever you need
-//        return $this->render('default/index.html.twig', array(
-//            'base_dir' => realpath($this->container->getParameter('kernel.root_dir') . '/..') . DIRECTORY_SEPARATOR,
-//        ));
-//    }
-
 
     /**
      * @Route("/", name="homepage")
      */
     public function indexAction()
     {
-        $number = random_int(0, 100);
-
         return $this->render('default/upload.html.twig', array(
-            'number' => $number,
+            'message' => '',
+            'messageType' => '',
         ));
     }
 
@@ -45,7 +33,6 @@ class DefaultController extends Controller
      */
     public function upload()
     {
-
         $files = array();
         $invalid = array();
         for ($i = 0; $i < count($_FILES['files']['name']); $i++) {
@@ -71,9 +58,10 @@ class DefaultController extends Controller
         }
         if (count($invalid) > 0) {
             $not_imported = implode(', ', $invalid);
-            return view('index')
-                ->with('type', 'warning')
-                ->with('message', 'The following files could not be imported: ' . $not_imported);
+            return $this->render('default/upload.html.twig', array(
+                'message' => "Error! The file {$not_imported} could not be imported",
+                'messageType' => "alert-danger",
+            ));
         }
         foreach ($xml_paths as $file) {
             $xml = simplexml_load_file($file);
@@ -91,6 +79,10 @@ class DefaultController extends Controller
         ));
     }
 
+    /**
+     * save/update the person info in the provided xml file
+     * @param $xml
+     */
     private function savePersonInfo($xml)
     {
         foreach ($xml as $data) {
@@ -109,7 +101,6 @@ class DefaultController extends Controller
             }
 
             foreach ($data['phones'] as $phoneNumbers) {
-
                 if (is_string($phoneNumbers)) {
                     $phoneNumbers = array(0 => $phoneNumbers);
                 }
@@ -132,10 +123,13 @@ class DefaultController extends Controller
         }
     }
 
+    /**
+     * save/update the orderinfo of the xml file
+     * @param $xml
+     */
     private function saveOrderInfo($xml)
     {
         foreach ($xml as $data) {
-
             $entityManager = $this->getDoctrine()->getManager();
             $shiporder = $this->getDoctrine()
                 ->getRepository(Shiporder::class)
@@ -144,8 +138,7 @@ class DefaultController extends Controller
                 $entityManager->merge($shiporder);
             } else {
                 $shiporder = new Shiporder();
-                $shiporder->orderId = $data['orderid'];
-                $shiporder->personId = $data['orderperson'];
+                $shiporder->setOrderid($data['orderid']);
                 $entityManager->persist($shiporder);
             }
 
@@ -157,22 +150,27 @@ class DefaultController extends Controller
                 $entityManager->merge($shipto);
             } else {
                 $shipto = new Shipto();
-                $shipto->setName($data['name']);
+                $shipto->setShiporder($shiporder);
+                $shipto->setName($shiptoData['name']);
                 $shipto->setAddress($shiptoData['address']);
                 $shipto->setCity($shiptoData['city']);
                 $shipto->setCountry($shiptoData['country']);
                 $shiporder->setShipto($shipto);
             }
+            $itemData = $data['items']['item'];
+
             $item = $shipto = $this->getDoctrine()
                 ->getRepository(Item::class)
                 ->findOneBy(array('shiporder' => $shiporder));
             if (!empty($item)) {
-                $itemData = $data['items']['item'];
-                if (!array_key_exists(0, $itemData)) {//todo arrumar aqui
-                    $itemData = array(0 => $itemData);
+                $entityManager->merge($item);
+            } else {
+                if (!array_key_exists(0, $itemData)) {
+                    $itemData = array(0 => $itemData);//if its not a multilevel array, create one to loop through it
                 }
                 foreach ($itemData as $itemValue) {
                     $item = new Item();
+                    $item->setShiporder($shiporder);
                     $item->setTitle($itemValue['title']);
                     $item->setNote($itemValue['note']);
                     $item->setQuantity($itemValue['quantity']);
@@ -181,7 +179,9 @@ class DefaultController extends Controller
                     $shiporder->getItems()->add($item);
                 }
             }
-        }//todo salvar e flush
 
+            $entityManager->persist($shiporder);
+            $entityManager->flush();
+        }
     }
 }

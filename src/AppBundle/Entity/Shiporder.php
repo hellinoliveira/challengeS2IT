@@ -21,13 +21,17 @@ class Shiporder
 
     /**
      * @var ArrayCollection
-     * @ORM\OneToMany(targetEntity="Item", mappedBy="shiporder")
+     * @ORM\OneToMany(targetEntity="Item",
+     *     cascade={"persist"},
+     *     mappedBy="shiporder")
      */
     private $items;
 
     /**
      * @var \AppBundle\Entity\Shipto
-     * @ORM\OneToOne(targetEntity="Shipto", mappedBy="shiporder")
+     * @ORM\OneToOne(targetEntity="Shipto",
+     *     cascade={"persist"},
+     *     mappedBy="shiporder")
      * @ORM\JoinColumn(name="shipto_id", referencedColumnName="id")
      */
     private $shipto;
@@ -74,6 +78,7 @@ class Shiporder
     public function setItems($items)
     {
         $this->items = $items;
+
         return $this;
     }
 
@@ -130,6 +135,4 @@ class Shiporder
         $this->createdAt = $createdAt;
         return $this;
     }
-
-
 }
