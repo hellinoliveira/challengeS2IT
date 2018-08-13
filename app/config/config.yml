@@ -77,23 +77,44 @@ nelmio_cors:
         hosts: []
         origin_regex: false
 
-nelmio_api_doc: ~
+nelmio_api_doc:
+     name: S2.ti API
 
 #FosRestbundle Configuration
 fos_rest:
     param_fetcher_listener: true
     body_listener: true
-    format_listener: false
+    format_listener:
+        rules:
+            - { path: ^/api/^, priorities: [ json], fallback_format: json , prefer_extension: true }
+            - { path: api/, priorities: [ json], fallback_format: json , prefer_extension: true }
+            - { path: /, priorities: [ json, html], fallback_format: ~, prefer_extension: false }
+    body_converter:
+        enabled: true
+        validate: true
+
     view:
         view_response_listener: 'force'
         formats:
             xml: true
-            json : true
+            json: true
         templating_formats:
             html: true
         force_redirects:
             html: true
         failed_validation: HTTP_BAD_REQUEST
-        default_engine: twig
+        default_engine: none
+        mime_types:
+            json: ['application/json', 'application/json;version=1.0', 'application/json;version=1.1']
+
+    exception:
+        codes:
+            'Symfony\Component\Routing\Exception\ResourceNotFoundException': 404
+            'Doctrine\ORM\OptimisticLockException': HTTP_CONFLICT
+        messages:
+            'Symfony\Component\Routing\Exception\ResourceNotFoundException': true
+    allowed_methods_listener: true
+    access_denied_listener:
+        json: true
     routing_loader:
         default_format: json

@@ -3,9 +3,8 @@ app:
     type:     annotation
 
 challenge:
-    type: rest
+    type: annotation
     resource: '@AppBundle/Controller/PersonController.php'
-    prefix:   /api
 
 NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"

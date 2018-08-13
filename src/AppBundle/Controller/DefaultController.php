@@ -75,7 +75,8 @@ class DefaultController extends Controller
             }
         }
         return $this->render('default/upload.html.twig', array(
-            'number' => '10',
+            'message' => "The file was successfully imported!",
+            'messageType' => "alert-success",
         ));
     }
 

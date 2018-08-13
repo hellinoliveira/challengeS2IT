@@ -72,11 +72,12 @@ class Person
 
     /**
      * @param int $personId
-     * @return Phone
+     * @return Person
      */
     public function setPersonId($personId)
     {
         $this->personId = $personId;
+
         return $this;
     }
 
@@ -96,6 +97,7 @@ class Person
     public function setPersonName($personName)
     {
         $this->personName = $personName;
+
         return $this;
     }
 
@@ -114,6 +116,7 @@ class Person
     public function setPhones($phones)
     {
         $this->phones = $phones;
+
         return $this;
     }
 
@@ -132,6 +135,7 @@ class Person
     public function setCreatedAt($createdAt)
     {
         $this->createdAt = $createdAt;
+
         return $this;
     }
 }

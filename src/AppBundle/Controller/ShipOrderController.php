@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Shiporder;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use FOS\RestBundle\Controller\Annotations\Get;
@@ -14,7 +15,7 @@ use AppBundle\Entity\Person;
 use AppBundle\Form\PersonType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
-class PersonController extends FOSRestController
+class ShipOrderController extends FOSRestController
 {
 
     /**
@@ -22,48 +23,50 @@ class PersonController extends FOSRestController
      *
      * @ApiDoc(
      *  resource=true,
-     *  description="Returns a collection of People Object",
+     *  description="Returns a collection of Shiporders Object",
      * )
      * @return Response
      * @View()
-     * @Get("/api/people")
+     * @Get("/api/shiporders")
      */
-    public function getPeopleAction()
+    public function getOrdersAction()
     {
-        $people = $this->getDoctrine()->getRepository("AppBundle:Person")
+        $orders = $this->getDoctrine()->getRepository("AppBundle:Shiporder")
             ->findAll();
-        $view = $this->view($people);
+        $view = $this->view($orders);
 
         return $this->handleView($view);
     }
 
     /**
+     *
+     * Get a single Shiporder info
      * @ApiDoc(
-     *  description="Returns a person Object",
+     *  description="Returns a Shiporder Object",
      *  requirements={
      *      {
      *          "name"="limit",
      *          "dataType"="integer",
      *          "requirement"="\d+",
-     *          "description"="return a single object"
+     *          "description"="return a single shiporder"
      *      }
      *  },
      *  parameters={
-     *      {"name"="id", "dataType"="integer", "required"=true, "description"="person id"}
+     *      {"name"="id", "dataType"="integer", "required"=true, "description"="shiporder id"}
      *  },
-     *  output={"collection"=false, "collectionName"="Person", "class"="AppBundle\Entity\Person"}
+     *  output={"collection"=false, "collectionName"="Shiporder", "class"="AppBundle\Entity\Shiporder"}
      * )
      * Get a person by ID
-     * @param Person $person
+     * @param Shiporder $shiporder
      * @return Response
      *
      * @View()
-     * @ParamConverter("person", class="AppBundle:Person")
-     * @Get("/api/person/{id}",)
+     * @ParamConverter("shiporder", class="AppBundle:Shiporder")
+     * @Get("/api/shiporder/{id}",)
      */
-    public function getPersonAction(Person $person)
+    public function getShiporderAction(Shiporder $shiporder)
     {
-        $view = $this->view($person);
+        $view = $this->view($shiporder);
 
         return $this->handleView($view);
     }
